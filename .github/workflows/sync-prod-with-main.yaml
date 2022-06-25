@@ -1,0 +1,25 @@
+name: Create production promotion pull request
+on:
+  push:
+    branches:
+      - main
+jobs:
+  productionPromotion:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: AutoModality/action-clean@v1
+      - uses: actions/checkout@v3
+        with:
+          ref: production
+      - name: Reset promotion branch
+        run: |
+          git config --global user.email "bot-test@bot.com"
+          git config --global user.name "Bot Test"
+          git config pull.rebase true
+          git fetch origin main:main
+          git rebase --merge -X ours main
+          git pull
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          branch: production-promotion
